@@ -1,4 +1,3 @@
-section .text
 
 %macro pr 2
 mov ecx,%1
@@ -23,26 +22,22 @@ call compare
 mov al,[m]
 call compare
 
-mov al,[n]
-cmp al,'1'
-jle printdata
+
+
 mov al,[m]
 cmp al,'1'
 je printdata
 cmp al,'0'
-je .zero_deg
-jmp .continue
-.zero_deg:
-mov byte [n],'1'
-jmp printdata
-
-
-.continue:
+je zero_deg
+ 
 sub byte [n],48
 sub byte [m],48
+mov al,[m]
+cmp al,0
+jl negative
 mov dl,1
 mov al,[n]
-mov [buffer],al
+mov cl,al
 mov byte [n],0
 mov bl,al
 
@@ -53,7 +48,7 @@ mov al,0
 inc dl
 
 .subcycle:
-cmp al,[buffer]
+cmp al,cl
 je cycle
 add byte [n],bl
 inc al
@@ -69,6 +64,16 @@ jmp printdata
 pr ir_error,ir_len
 jmp exit
 
+
+zero_deg:
+mov byte [n],'1'
+jmp printdata
+
+
+negative:
+pr negative_msg,n_size
+jmp exit
+
 printdata:
 pr result,res_len
 pr n,1
@@ -82,37 +87,36 @@ cmp al,48
 jl .error
 cmp al,57
 jg .error
+ ret
+ .error:
+ pr im_error,im_len
+ jmp exit
+
+
+print:
+mov ebx, 1
+mov eax, 4
+int 0x80
 ret
-.error:
-pr im_error,im_len
-jmp exit
-
-
-    print:
-    mov     ebx, 1
-    mov     eax, 4
-    int     0x80
-    ret
 
 exit:
-    mov     eax, 1
-    mov ebx,0
-    int     0x80
+mov eax, 1
+mov ebx,0
+int 0x80
     
 
 section .data
-    msg db  "Enter 2 numbers: "
-    len equ $ - msg
-    im_error db  10,"Incorrect numbers!"
-    im_len equ $ - im_error
-    ir_error db  10,"Incorrect result!"
-    ir_len equ $ - ir_error
-    result db  10,"Result: "
-    res_len equ $ - result
-    values:
-    n: times 2 db ' '
-    m: times 2 db ' '
-    val_len equ $-values
-    buffer db 0
-    
-    
+msg db  "Enter 2 numbers: "
+len equ $ - msg
+im_error db  10,"Incorrect numbers!"
+im_len equ $ - im_error
+ir_error db  10,"Incorrect result!"
+ir_len equ $ - ir_error
+negative_msg db 10,"Error! Negative value entered!"
+n_size equ $-negative_msg
+result db  10,"Result: "
+res_len equ $ - result
+values:
+n: times 2 db ' '
+m: db ' '
+val_len equ $-values
