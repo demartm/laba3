@@ -1,4 +1,4 @@
-
+section .text
 %macro pr 2
 mov ecx,%1
 mov edx,%2
