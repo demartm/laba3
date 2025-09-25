@@ -33,7 +33,7 @@ je zero_deg
 sub byte [n],48
 sub byte [m],48
 mov al,[m]
-cmp al,0
+cmp [m],byte 0;al,0
 jl negative
 mov dl,1
 mov al,[n]
@@ -63,7 +63,7 @@ jmp cycle
 
 finalCheck:
 mov al,[n]
-cmp al,9
+cmp [n],byte 9;al,9
 jg .error
 add byte [n],48
 jmp printdata
