@@ -41,6 +41,9 @@ mov cl,al
 mov byte [n],0
 mov bl,al
 
+cmp [n],byte 0
+jl negative_val
+
 cycle:
 cmp dl,[m]
 je finalCheck
@@ -49,10 +52,14 @@ inc dl
 
 .subcycle:
 cmp al,cl
-je cycle
+je .negative_check
 add byte [n],bl
 inc al
 jmp .subcycle
+.negative_check:
+imul eax,[buffer]
+jmp cycle
+
 
 finalCheck:
 mov al,[n]
@@ -73,6 +80,12 @@ jmp printdata
 negative:
 pr negative_msg,n_size
 jmp exit
+negative_val:
+mov byte [buffer],-1
+mov al,[n]
+imul eax,-1
+mov [n],al
+jmp cycle
 
 printdata:
 pr result,res_len
@@ -120,3 +133,4 @@ values:
 n: times 2 db ' '
 m: db ' '
 val_len equ $-values
+buffer db 1
