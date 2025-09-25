@@ -66,6 +66,12 @@ mov al,[n]
 cmp [n],byte 9;al,9
 jg .error
 add byte [n],48
+
+cmp byte [m],0
+jl upside_down
+
+
+
 jmp printdata
 .error:
 pr ir_error,ir_len
@@ -80,12 +86,24 @@ jmp printdata
 negative:
 pr negative_msg,n_size
 jmp exit
+
 negative_val:
 mov byte [buffer],-1
 mov al,[n]
 imul eax,-1
 mov [n],al
 jmp cycle
+
+upside_down:
+xor edx,edx
+mov ebx,edx
+mov ecx,edx
+mov cx,ax
+mov ax,1
+div ecx
+jmp printdata
+
+
 
 printdata:
 pr result,res_len
